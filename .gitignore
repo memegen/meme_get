@@ -89,4 +89,4 @@ ENV/
 .ropeproject
 
 # Custom
-cache_*
+\meme-get\cache_*
