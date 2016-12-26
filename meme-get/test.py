@@ -30,7 +30,9 @@ hashID.update(repr(memeA).encode('utf-8'))
 print(hashID.hexdigest())
 
 A = memesites.QuickMeme()
+print("Should be false:", A._cache_expired())
 A._memes_on_page(1, 5)
+
 A_tuple = A._write_data_tuple()
 A._save_cache()
 B = memesites.QuickMeme()
