@@ -293,7 +293,7 @@ class QuickMeme(MemeSite):
         try:
             delta_time = datetime.datetime.now() \
                 - self._read_update_time_from_cache()
-            return delta_time > datetime.timedelta(days=self.maxcache_day)
+            return delta_time > datetime.timedelta(days=self._maxcache_day)
         except OSError:
             return False
 
