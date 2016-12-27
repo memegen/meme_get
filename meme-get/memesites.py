@@ -205,6 +205,33 @@ class MemeSite(object):
         file_name = "cache_{:s}".format(hashID.hexdigest())
         return file_name
 
+    def _cache_expired(self):
+        """ Check whether cache has expired. Also return false when cache doesn't exist
+        """
+        try:
+            delta_time = datetime.datetime.now() \
+                - self._read_update_time_from_cache()
+            return delta_time > datetime.timedelta(days=self._maxcache_day)
+        except OSError:
+            return False
+
+    def _no_cache(self):
+        """ Check whether cache exists
+        """
+        fname = self._filename()
+        return os.path.isfile(fname)
+
+    def _build_cache(self):
+        """ Build cache
+        """
+        self._populate(self._cache_size)
+        self._save_cache()
+
+    def _populate(self):
+        """ Populate the meme pool and deque
+        """
+        pass
+
     def __repr__(self):
         return "Memesite URL:{:s} Pool:{!s} Update Time:{!s}"\
             .format(self._url,
@@ -242,7 +269,7 @@ class QuickMeme(MemeSite):
         """
         # Check the time difference
         if self._no_cache() or self._cache_expired():
-            self._build_cache(self._cache_size)
+            self._build_cache()
         else:
             # Read in saved memes
             self._update_with_cache()
