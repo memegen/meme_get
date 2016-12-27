@@ -1,5 +1,7 @@
 import unittest
+from unittest import mock
 import memesites
+from collections import deque
 
 
 class MemeTest(unittest.TestCase):
@@ -58,22 +60,61 @@ class MemeSiteTest(unittest.TestCase):
     """ Test the MemeSite class
     """
 
-    def test_clean_meme_pool(self):
-        pass
+    @mock.patch('memesites.requests.get', side_effect=lambda x: x)
+    def test_clean_meme_pool(self, mock_get):
+        """ Test the clean meme pool function with mock requests.get
 
-    def test_clean_meme_deque(self):
-        pass
+        Mocked so that the requests package does not actually make
+        http requests
+        """
+        # Test with fake meme pool and no internet connection
+        A = memesites.MemeSite("http://www.google.com")
+        A._meme_pool = set('abc')
+        A.clean_meme_pool()
+        self.assertTrue(A._meme_pool == set())
 
+    @mock.patch('memesites.requests.get', side_effect=lambda x: x)
+    def test_clean_meme_deque(self, mock_get):
+        """ Test the clean meme deque function with mock requests.get
+        """
+        # Test with fake meme pool and no internet connection
+        A = memesites.MemeSite("http://www.google.com")
+        A._meme_deque = deque('abc')
+        A.clean_meme_deque()
+        self.assertTrue(A._meme_deque == deque())
+
+    @mock.patch('memesites.requests.get', side_effect=lambda x: x)
     def test_get_url(self):
-        pass
+        """ Test the get url function
 
+        The url returned by the get_url function should be the same
+        as the url passed to the constructor at initialization
+        """
+        A = memesites.MemeSite("http://www.google.com")
+        self.assertTrue("http://www.google.com" == A.get_url())
+
+    @mock.patch('memesites.requests.get', side_effect=lambda x: x)
     def test_get_meme_pool(self):
-        pass
+        """ Test the get_meme_pool function
+        """
+        # Test with fake meme pool and no internet connection
+        A = memesites.MemeSite("http://www.google.com")
+        A._meme_deque = deque('abc')
+        A.clean_meme_deque()
+        self.assertTrue(A._meme_deque == deque())
 
     def test_cache(self):
         """ Test the _read_cache, and _save_cache functions
         Also test _read_data_tuple, _write_data_tuple and _filename
         """
+        pass
+
+
+class QuickMemeTest(unittest.TestCase):
+    """ Unit test the quickmeme.com
+    """
+
+    def test_get_memes(self):
         pass
 
 

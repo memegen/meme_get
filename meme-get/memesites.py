@@ -242,7 +242,7 @@ class QuickMeme(MemeSite):
         """
         # Check the time difference
         if self._no_cache() or self._cache_expired():
-            self._build_cache(self.cache_size)
+            self._build_cache(self._cache_size)
         else:
             # Read in saved memes
             self._update_with_cache()
