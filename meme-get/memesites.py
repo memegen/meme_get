@@ -202,7 +202,7 @@ class MemeSite(object):
         hashID.update(repr(self._url).encode('utf-8'))
 
         # Create a file name with hexdecimal representation of the SHA1 hash
-        file_name = "cache_{:s}".format(hashID.hexdigest())
+        file_name = "cache_{:s}.memecache".format(hashID.hexdigest())
         return file_name
 
     def _cache_expired(self):
