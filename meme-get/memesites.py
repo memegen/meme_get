@@ -232,7 +232,7 @@ class QuickMeme(MemeSite):
         self._origin = Origins.QUICKMEME
 
         if self._no_cache() or self._cache_expired():
-            self._build_cache(cache_size)
+            self._build_cache()
 
     def get_memes(self, num_memes):
         """
@@ -326,8 +326,7 @@ class QuickMeme(MemeSite):
         self._last_update = datetime.datetime.now()
 
     def _memes_on_page(self, page_num, n):
-        """
-        Get n memes from page_num page
+        """Get n memes from page_num page
 
         Remarks:
         For the meme deque, we put memes in from the left side.
@@ -336,6 +335,10 @@ class QuickMeme(MemeSite):
         the other way around, we pop from the left side (FILO).
 
         We also use set so that we can keep a unique collection of memes.
+
+        Keyword Arguments:
+        page_num -- the number of page we would like to retrieve
+        n -- the number of memes we would like to retrieve from that page
         """
         if n > self._posts_per_page:
             return None
