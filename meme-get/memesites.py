@@ -264,12 +264,11 @@ class QuickMeme(MemeSite):
     def get_memes(self, num_memes):
         """
         Get a number of memes from Quickmeme.com
-
-        1) Check the last update time. Find time difference
         """
         # Check the time difference
         if self._no_cache() or self._cache_expired():
             self._build_cache()
+
         else:
             # Read in saved memes
             self._update_with_cache()
@@ -328,7 +327,7 @@ class QuickMeme(MemeSite):
         """ Check whether cache exists
         """
         fname = self._filename()
-        return os.path.isfile(fname)
+        return not os.path.isfile(fname)
 
     def _build_cache(self):
         """ Build cache
