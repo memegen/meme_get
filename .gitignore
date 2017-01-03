@@ -89,5 +89,6 @@ ENV/
 .ropeproject
 
 # Custom
-meme-get/cache_*
+*.memecache
 *.jpg
+*.json

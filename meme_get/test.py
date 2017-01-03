@@ -29,12 +29,23 @@ print(repr(memeA))
 hashID.update(repr(memeA).encode('utf-8'))
 print(hashID.hexdigest())
 
-A = memesites.QuickMeme()
-print("Should be false:", A._cache_expired())
-A._memes_on_page(1, 5)
+#A = memesites.QuickMeme()
+#print("Should be false:", A._cache_expired())
+#A._memes_on_page(1, 5)
 
-A_tuple = A._write_data_tuple()
-A._save_cache()
-B = memesites.QuickMeme()
-B._read_cache()
-print(A_tuple == B._write_data_tuple())
+#A_tuple = A._write_data_tuple()
+# A._save_cache()
+#B = memesites.QuickMeme()
+# B._read_cache()
+#print(A_tuple == B._write_data_tuple())
+
+# Test get memes
+#A = memesites.QuickMeme()
+#result = A.get_memes(3)
+#result2 = A.get_memes(500)
+#result = A.get_memes(20)
+
+# Test memegenerator.net get memes
+A = memesites.MemeGenerator()
+result = A._memes_on_page(1, 10)
+print(result)
