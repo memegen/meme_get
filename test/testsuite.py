@@ -3,6 +3,7 @@ from unittest import mock
 from meme_get import memesites
 from collections import deque
 import json
+import datetime
 
 
 class MemeTest(unittest.TestCase):
@@ -122,6 +123,8 @@ class QuickMemeTest(unittest.TestCase):
 
 
 def mock_requests_get(*args, **kwargs):
+    """ Mock requests.get() function for testing meme parsing functions.
+    """
     class MockResponse(object):
 
         def __init__(self, json_data, status_code):
@@ -129,21 +132,41 @@ def mock_requests_get(*args, **kwargs):
             self.status_code = status_code
 
         def json(self):
+
             return self.json_data
 
     print(args)
     url = args[0]
     target_url = "http://version1.api.memegenerator.net/" \
-                 "Instances_Select_By_Popular"
+                 "Instances_Select_ByPopular"
 
     with open('./test/memegenerator_sample.json') as data_file:
         mock_json_1 = json.load(data_file)
 
-    print(url)
+    print("Using mock requests get method.")
+    print("URL: ", url)
+    print("Target URL: ", target_url)
+
     if url == target_url:
         return MockResponse(mock_json_1, 200)
     else:
         return MockResponse('This is a mocking function.', 200)
+
+
+def mock_get_memes(*args, **kwargs):
+    """ Mock function for the get_memes function
+
+    Create a phony list of Memes
+    """
+    a = []
+    for i in range(args[0]):
+        a.append(memesites.Meme(i, datetime.datetime.now(),
+                                caption=str(i),
+                                raw_pic_url=str(i),
+                                origin=memesites.Origins.NA,
+                                tags=[],
+                                score=i))
+    return a
 
 
 class MemeGeneratorSiteTest(unittest.TestCase):
@@ -151,6 +174,8 @@ class MemeGeneratorSiteTest(unittest.TestCase):
     """
 
     def test_get_memes(self):
+        """ Test the get_memes() function of the MemeGenerator class
+        """
         A = memesites.MemeGenerator()
 
         # Small prime number
@@ -183,16 +208,47 @@ class MemeGeneratorSiteTest(unittest.TestCase):
     @mock.patch('meme_get.memesites.requests.get',
                 side_effect=mock_requests_get)
     def test_memes_on_page(self, mock_get):
+        """ Testing the _memes_on_page() function of the MemeGenerator class
+        """
 
         print("P1")
         A = memesites.MemeGenerator()
         # This the function call that will use the mock function
-        A._memes_on_page(1)
-        print(len(A._meme_deque))
-        print("P2")
+        A._memes_on_page(1, 10)
+        self.assertTrue(len(A._meme_deque) == 10)
+
+        # Open the json data file and see whether json data
+        # was correctly interpreted
+        with open('./test/memegenerator_sample.json') as data_file:
+            json_data = json.load(data_file)
+
+        control = json_data["result"]
+        experiment = A._meme_deque
+
+        # See whether the memes in the deque has the same data as the json file
+        # and in the same sequence
+        for x in control:
+            try:
+                a = experiment.pop()
+                self.assertTrue(a.get_pic_url() == x["instanceImageUrl"])
+                self.assertTrue(x["text0"] in a.get_caption())
+            except IndexError:  # deque is already empty
+                pass
+
+    @mock.patch('meme_get.memesites.MemeGenerator.get_memes',
+                side_effect=mock_get_memes)
+    def test_get_captions(self, mock_get):
+        """ Testing function for get_captions() functions on MemeGenerator class
+        """
+        A = memesites.MemeGenerator()
+
+        a = A.get_captions(10)
+
+        # Check whether the returned captions list is
+        # consistent with the Memes fed into the class
+        for i in range(len(a)):
+            self.assertTrue(a[i] == str(i))
 
 
 if __name__ == '__main__':
     unittest.main()
-
-# TODO: Add more tests

@@ -161,6 +161,12 @@ class MemeSite(object):
         except Exception as err:
             sys.stderr.write("ERROR: {} \n".format(str(err)))
 
+    def get_captions(self, num_memes):
+        """ Return a list of captions
+        """
+        a = self.get_memes(num_memes)
+        return [x.get_caption() for x in a]
+
     def get_memes(self, num_memes):
         """ Return a list of memes
         """
@@ -572,6 +578,8 @@ class MemeGenerator(MemeSite):
                 extra = " --- " + x["text1"]
                 ccaption += extra
             except TypeError:  # Returned json sometimes doesn't have text1
+                pass
+            except KeyError:  # Does not have the text1 tags
                 pass
 
             imageUrl = ""
