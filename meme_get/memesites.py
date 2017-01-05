@@ -526,17 +526,22 @@ class MemeGenerator(MemeSite):
         if self._cache_size >= num_memes:
             return self._pop_memes(num_memes)
         else:
+            # Caculate the additional pages we need to scrap to get the
+            # remaining memes.
             result = self._pop_memes(self._cache_size)
-
             pnum = math.ceil(num_memes / self._posts_per_page)
             print("Last page: ", pnum)
             first_pnum = math.ceil(self._cache_size / self._posts_per_page)
             additional_memes = []
 
             # Get all the additional memes
+            # Notice that we are double counting some of our original cached
+            # memes and counting more memes than we needed on the last page
             for i in range(first_pnum, pnum + 1):
                 additional_memes = additional_memes + self._get_memes_helper(i)
 
+            # Get ride of the additional memes and resolve the double counting
+            # issue
             pre_index = self._cache_size % self._posts_per_page
             waste = self._posts_per_page * pnum - num_memes
 
