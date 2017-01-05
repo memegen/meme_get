@@ -52,7 +52,11 @@ class Meme(object):
     """
 
     def __init__(self, pic_url, time,
-                 caption=None, raw_pic_url=None, origin=Origins.NA, tags=[],
+                 title=None,
+                 caption=None,
+                 raw_pic_url=None,
+                 origin=Origins.NA,
+                 tags=[],
                  score=-1):
         """ __init__ method for Meme class
 
@@ -65,8 +69,9 @@ class Meme(object):
             tags (list): A list of strings representing tags
         """
         self._pic_url = pic_url
-        self._caption = caption
         self._time = time
+        self._title = title
+        self._caption = caption
         self._raw_pic_url = raw_pic_url
         self._origin = Origins.NA
         self._tags = tags
@@ -80,6 +85,11 @@ class Meme(object):
         """ Get caption of the meme
         """
         return self._caption
+
+    def get_title(self):
+        """ Get the title of the meme
+        """
+        return self._title
 
     def get_time(self):
         """ Return the meme's creation time
@@ -567,12 +577,14 @@ class MemeGenerator(MemeSite):
 
         for x in cmemes:
 
+            # Picture url
             instance_image_url = ""
             try:
                 instance_image_url = x["instanceImageUrl"]
             except KeyError:
                 pass
 
+            # Caption
             ccaption = x["text0"]
             try:
                 extra = " --- " + x["text1"]
@@ -582,15 +594,17 @@ class MemeGenerator(MemeSite):
             except KeyError:  # Does not have the text1 tags
                 pass
 
+            # Raw image (meme macro) url
             imageUrl = ""
             try:
                 imageUrl = x["imageUrl"]
             except KeyError:
                 pass
 
+            # Tags
             ctags = []
             try:
-                ctags += [x["urlName"]]
+                ctags += [x["displayName"]]
             except KeyError:
                 pass
 
