@@ -217,8 +217,10 @@ class MemeSite(object):
             data = pickle.load(file_obj)
             # print(data)
             # self._read_data_tuple(data)
+            file_obj.close()
             return data
         else:
+            file_obj.close()
             raise OSError("No cache exists.")
 
     def _update_with_cache(self):
@@ -237,6 +239,7 @@ class MemeSite(object):
         # Save the data to a file with a unique name
         file_obj = open(self._filename(), 'wb')
         pickle.dump(self._write_data_tuple(), file_obj)
+        file_obj.close()
 
     def _cache_expired(self):
         """ Check whether cache has expired. Also return false when cache doesn't exist
@@ -244,19 +247,35 @@ class MemeSite(object):
         try:
             delta_time = datetime.datetime.now() \
                 - self._read_update_time_from_cache()
-            return delta_time > datetime.timedelta(days=self._maxcache_day)
+            result = delta_time > datetime.timedelta(days=self._maxcache_day)
+
+            if result:
+                print("Cache has expired.")
+            else:
+                print("Cache is not expired.")
+
+            return result
         except OSError:
+            print("Cache does not exist.")
             return False
 
     def _no_cache(self):
         """ Check whether cache exists
         """
         fname = self._filename()
-        return not os.path.isfile(fname)
+        result = os.path.isfile(fname)
+
+        if result:
+            print("Cache exists.")
+        else:
+            print("Cache does not exist.")
+
+        return not result
 
     def _build_cache(self):
         """ Build cache
         """
+        print("Building cache.")
         self._populate(self._cache_size)
         self._save_cache()
 
@@ -353,7 +372,7 @@ class QuickMeme(MemeSite):
                 self._meme_pool.add(meme)
                 self._meme_deque.appendleft(meme)
 
-            result = self._pop_memes(self._cache_size)
+            result = self._pop_memes(self.num_memes)
             return result
 
     def _populate(self, num):
@@ -461,6 +480,7 @@ class MemeGenerator(MemeSite):
             "http://www.memegenerator.net", cache_size, maxcache_day)
         self._origin = Origins.MEMEGENERATOR
         self._api = "http://version1.api.memegenerator.net/"
+        self._method_entry = "Instances_Select_ByPopular"
 
         if popular_type == "Daily":
             self._popular_days = 1
@@ -487,7 +507,28 @@ class MemeGenerator(MemeSite):
         else:
             self._update_with_cache()
 
-        # TODO: Not yet finished
+        if self._cache_size >= num_memes:
+            return self._pop_memes(num_memes)
+        else:
+            result = self._pop_memes(self._cache_size)
+
+            pnum = math.ceil(num_memes / self._posts_per_page)
+            print("Last page: ", pnum)
+            first_pnum = math.ceil(self._cache_size / self._posts_per_page)
+            additional_memes = []
+
+            # Get all the additional memes
+            for i in range(first_pnum, pnum + 1):
+                additional_memes = additional_memes + self._get_memes_helper(i)
+
+            pre_index = self._cache_size % self._posts_per_page
+            waste = self._posts_per_page * pnum - num_memes
+
+            additional_memes = additional_memes[
+                pre_index:len(additional_memes) - waste]
+
+            result = result + additional_memes
+            return result
 
     def _populate(self, num):
         """ Populate the meme pool and deque
@@ -499,35 +540,26 @@ class MemeGenerator(MemeSite):
             else:
                 self._memes_on_page(i, num % self._posts_per_page)
 
-    def _memes_on_page(self, page_num, n):
-        """ Get num memes on page
+    def _get_memes_helper(self, page_num):
+        """ Helper function for the get_memes() function
 
-        memegenerator.net has a convenient api that allows us to get memes
-        in JSON format.
-        API Documentation: http://version1.api.memegenerator.net/
+        Return a list of memes on the specified page given. This function
+        uses the API of the memegenerator.net
         """
-
-        if n > self._posts_per_page:
-            return None
-
-        # Use the Instances_Select_ByPopular method
-        method_entry = "Instances_Select_ByPopular"
-        url = self._api + method_entry
+        url = self._api + self._method_entry
         payload = {"languageCode": "en",
                    "pageIndex": page_num, "days": self._popular_days}
-        print(url)
-
         r = requests.get(url, params=payload, timeout=self._timeout)
-        print(r.url)
+
         try:
             json_memes = r.json()
         except ValueError as err:  # cannot decode json
             sys.stderr.write("ERROR: {} \n".format(str(err)))
 
-        cmemes = json_memes["result"][:n]
+        cmemes = json_memes["result"]
+        meme_list = []
 
         for x in cmemes:
-            print("Current meme: ", x)
 
             instance_image_url = ""
             try:
@@ -567,9 +599,27 @@ class MemeGenerator(MemeSite):
                          origin=self._origin,
                          tags=ctags,
                          score=cscore)
+            meme_list.append(cmeme)
 
-            self._meme_pool.add(cmeme)
-            self._meme_deque.appendleft(cmeme)
+        return meme_list
+
+    def _memes_on_page(self, page_num, n):
+        """ Get num memes on page
+
+        memegenerator.net has a convenient api that allows us to get memes
+        in JSON format.
+        API Documentation: http://version1.api.memegenerator.net/
+        """
+
+        if n > self._posts_per_page:
+            return None
+
+        # Use the helper function to get a list of memes on the page
+        meme_list = self._get_memes_helper(page_num)
+
+        for x in meme_list:
+            self._meme_pool.add(x)
+            self._meme_deque.appendleft(x)
 
     def _filename(self):
         """ Override superclass _filename method
@@ -593,7 +643,7 @@ class MemeGenerator(MemeSite):
         """
         data = (self._url, self._max_tries, self._meme_pool,
                 self._meme_deque, self._last_update, self._cache_size,
-                self._maxcache_day)  # TODO: add popular type
+                self._maxcache_day, self._popular_days)
         return data
 
     def _read_data_tuple(self, t_data):
@@ -606,7 +656,7 @@ class MemeGenerator(MemeSite):
         self._last_update = t_data[4]
         self._cache_size = t_data[5]
         self._maxcache_day = t_data[6]
-        # TODO: add popular type
+        self._popular_days = t_data[7]
 
     def _read_update_time_from_cache(self):
         """ Read cache update time from cache file

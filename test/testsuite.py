@@ -121,7 +121,7 @@ class QuickMemeTest(unittest.TestCase):
         pass
 
 
-def mock_requests_get(self, url, **kwargs):
+def mock_requests_get(*args, **kwargs):
     class MockResponse(object):
 
         def __init__(self, json_data, status_code):
@@ -131,8 +131,10 @@ def mock_requests_get(self, url, **kwargs):
         def json(self):
             return self.json_data
 
+    print(args)
+    url = args[0]
     target_url = "http://version1.api.memegenerator.net/" \
-        "Instances_Select_By_Popular"
+                 "Instances_Select_By_Popular"
 
     with open('./test/memegenerator_sample.json') as data_file:
         mock_json_1 = json.load(data_file)
@@ -140,6 +142,8 @@ def mock_requests_get(self, url, **kwargs):
     print(url)
     if url == target_url:
         return MockResponse(mock_json_1, 200)
+    else:
+        return MockResponse('a', 200)
 
 
 class MemeGeneratorSiteTest(unittest.TestCase):
@@ -147,15 +151,43 @@ class MemeGeneratorSiteTest(unittest.TestCase):
     """
 
     def test_get_memes(self):
-        pass
+        A = memesites.MemeGenerator()
+
+        # Small prime number
+        resultA_1 = A.get_memes(31)
+        resultA_2 = A.get_memes(31)
+
+        self.assertTrue(len(resultA_1) == 31)
+        self.assertTrue(resultA_1 == resultA_2)
+
+        # Size equals to cache size
+        resultB_1 = A.get_memes(500)
+        resultB_2 = A.get_memes(500)
+
+        self.assertTrue(len(resultB_1) == 500)
+        self.assertTrue(resultB_1 == resultB_2)
+
+        # Size greater than cache size
+        # This test runs longer
+        resultC_1 = A.get_memes(510)
+        resultC_2 = A.get_memes(510)
+
+        # We need to do this because the uncached memes will have
+        # Different creation times
+        resultC_1 = [x.get_pic_url() for x in resultC_1]
+        resultC_2 = [x.get_pic_url() for x in resultC_2]
+
+        self.assertTrue(len(resultC_1) == 510)
+        self.assertTrue(resultC_1 == resultC_2)
 
     @mock.patch('meme_get.memesites.requests.get',
                 side_effect=mock_requests_get)
     def test_memes_on_page(self, mock_get):
+
         print("P1")
         A = memesites.MemeGenerator()
+        print(A._main_page)
         print("P2")
-        A._memes_on_page(1, 15)
 
 
 if __name__ == '__main__':

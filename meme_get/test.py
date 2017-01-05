@@ -47,5 +47,5 @@ print(hashID.hexdigest())
 
 # Test memegenerator.net get memes
 A = memesites.MemeGenerator()
-result = A._memes_on_page(1, 10)
+result = A.get_memes(32)
 print(result)
