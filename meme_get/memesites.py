@@ -617,9 +617,9 @@ class MemeGenerator(MemeSite):
         # Use the helper function to get a list of memes on the page
         meme_list = self._get_memes_helper(page_num)
 
-        for x in meme_list:
-            self._meme_pool.add(x)
-            self._meme_deque.appendleft(x)
+        for i in range(n):
+            self._meme_pool.add(meme_list[i])
+            self._meme_deque.appendleft(meme_list[i])
 
     def _filename(self):
         """ Override superclass _filename method

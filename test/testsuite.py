@@ -143,7 +143,7 @@ def mock_requests_get(*args, **kwargs):
     if url == target_url:
         return MockResponse(mock_json_1, 200)
     else:
-        return MockResponse('a', 200)
+        return MockResponse('This is a mocking function.', 200)
 
 
 class MemeGeneratorSiteTest(unittest.TestCase):
@@ -186,7 +186,9 @@ class MemeGeneratorSiteTest(unittest.TestCase):
 
         print("P1")
         A = memesites.MemeGenerator()
-        print(A._main_page)
+        # This the function call that will use the mock function
+        A._memes_on_page(1)
+        print(len(A._meme_deque))
         print("P2")
 
 
