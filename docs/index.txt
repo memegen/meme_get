@@ -1,0 +1,25 @@
+.. meme_get documentation master file, created by
+   sphinx-quickstart on Thu Jan  5 17:37:19 2017.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+
+meme_get
+====================================
+
+This is a library that provides a high-level abstraction for extracting memes from popular online websites.
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   documentation
+
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
