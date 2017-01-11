@@ -8,6 +8,8 @@ import pickle
 import hashlib
 import math
 import os.path
+import praw
+import configparser
 from enum import Enum
 from collections import deque
 
@@ -18,10 +20,13 @@ class Origins(Enum):
     Attributes:
     NA: Not available
     QUICKMEME: Representing quickmeme.com
+    MEMEGENERATOR: Representing memegenerator.net
+    REDDITMEMES: Representing /r/meme subreddit
     """
     NA = 0
     QUICKMEME = 1
     MEMEGENERATOR = 2
+    REDDITMEMES = 3
 
     @classmethod
     def string_to_enum(self, s):
@@ -33,6 +38,8 @@ class Origins(Enum):
             return self.QUICKMEME
         elif s.lower() == "memegenerator":
             return self.MEMEGENERATOR
+        elif s.lower() == "redditmemes":
+            return self.REDDITMEMES
         else:
             return self.NA
 
@@ -693,3 +700,119 @@ class MemeGenerator(MemeSite):
         return dtuple[4]
 
 # TO-DO: Write one for reddit meme subreddit
+
+
+class RedditMemes(MemeSite):
+
+    def __init__(self, cache_size=500, maxcache_day=1,
+                 popular_type="Daily", timeout=20):
+        """ The __init__ method for MemeGenerator class
+
+        Args:
+            cache_size (int): Number of memes stored as cache
+            maxcache_day (int): Number of days until the cache expires
+        """
+        super(MemeGenerator, self).__init__(
+            "https://www.reddit.com/r/memes/", cache_size, maxcache_day)
+        self._origin = Origins.REDDITMEMES
+
+        # Client ID and user agent requested by Reddit API
+        config = configparser.ConfigParser()
+        config.read('config.ini')
+        self._client_id = config['Reddit']['ClientID']
+        self._client_secret = config['Reddit']['ClientSecret']
+        if self._client_secret == '':
+            self._client_secret = None
+        self._user_agent = config['Reddit']['UserAgent'].format(sys.platform)
+
+        # Generate a Reddit instance
+        self._reddit = praw.Reddit(client_id=self._client_id,
+                                   client_secret=self._client_secret,
+                                   user_agent=self. _user_agent)
+
+        if self._no_cache() or self._cache_expired():
+            self._build_cache()
+
+    def get_memes(self, num):
+        """ Get memes from Reddit /r/meme subreddit
+        """
+        if self._no_cache() or self._cache_expired():
+            self._build_cache()
+        else:
+            self._update_with_cache()
+
+        if self._cache_size >= num:
+            return self._pop_memes(num)
+        else:
+            # Haven't found a way to get memes
+            # in a specific range using PRAW
+            results = self._reddit.subreddit('memes').hot(limit=num)
+            meme_results = []
+
+            for submission in results:
+
+                # Get required properties for the memes
+                ctitle = submission.title
+                curl = submission.url
+
+                cmeme = Meme(curl, datetime.datetime.now(),
+                             title=ctitle,
+                             origin=Origins.REDDITMEMES)
+                meme_results.append(cmeme)
+
+            return meme_results
+
+    def _populate(self, num):
+        """ Populate the meme pool and deque
+
+        This method uses the reddit API wrapper PRAW library.
+        """
+        # Get num submissions
+        results = self._reddit.subreddit('memes').hot(limit=num)
+        # Save each submissions into the deque and pool
+        for submission in results:
+
+            # Get required properties for the memes
+            ctitle = submission.title
+            curl = submission.url
+
+            cmeme = Meme(curl, datetime.datetime.now(),
+                         title=ctitle,
+                         origin=Origins.REDDITMEMES)
+            self._meme_pool.add(cmeme)
+            self._meme_deque.appendleft(cmeme)
+
+    def _filename(self):
+        """ Generate a unique filename for the RedditMemes cache file
+        """
+        hashID = hashlib.sha1()
+        hashID.update(repr(self._url).encode('utf-8'))
+
+        # Create a file name with hexdecimal representation of the SHA1 hash
+        file_name = "cache_{:s}.memecache".format(hashID.hexdigest())
+        return file_name
+
+    def _write_data_tuple(self):
+        """ Write all internal states to a data tuple
+        """
+        data = (self._url, self._max_tries, self._meme_pool,
+                self._meme_deque, self._last_update, self._cache_size,
+                self._maxcache_day)
+        return data
+
+    def _read_data_tuple(self, t_data):
+        """ Read in a data tuple and replace all the instance variables
+        """
+        self._url = t_data[0]
+        self._max_tries = t_data[1]
+        self._meme_pool = t_data[2]
+        self._meme_deque = t_data[3]
+        self._last_update = t_data[4]
+        self._cache_size = t_data[5]
+        self._maxcache_day = t_data[6]
+
+    def _read_update_time_from_cache(self):
+        """ Read update time from cache
+        """
+        dtuple = self._read_cache()
+        return dtuple[4]
