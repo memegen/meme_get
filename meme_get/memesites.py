@@ -233,13 +233,10 @@ class MemeSite(object):
         """ Read the saved cache file (no side effects)
         Read a tuple containing the data
         """
-        #fname = self._filename()
-        cdir = os.path.dirname(os.path.realpath(__file__))
-        tgt_path = os.path.join(cdir, self._filename())
 
-        if os.path.isfile(tgt_path):
+        if os.path.isfile(self._filepath):
             # Read the file in using Pickle
-            file_obj = open(tgt_path, 'rb')
+            file_obj = open(self._filepath, 'rb')
             data = pickle.load(file_obj)
             # print(data)
             # self._read_data_tuple(data)
@@ -263,15 +260,8 @@ class MemeSite(object):
         """
         # Store all the variables into a tuple
         # Save the data to a file with a unique name
-        cdir = os.path.dirname(os.path.realpath(__file__))
-        tgt_path = os.path.join(cdir, self._filename())
 
-        cdir1 = os.path.dirname(os.path.abspath(
-            inspect.getfile(inspect.currentframe())))
-
-        print(cdir, cdir1, tgt_path)
-
-        file_obj = open(tgt_path, 'wb')
+        file_obj = open(self._filepath(), 'wb')
         pickle.dump(self._write_data_tuple(), file_obj)
         file_obj.close()
 
@@ -297,11 +287,7 @@ class MemeSite(object):
     def _no_cache(self):
         """ Check whether cache exists
         """
-        #fname = self._filename()
-        cdir = os.path.dirname(os.path.realpath(__file__))
-        tgt_path = os.path.join(cdir, self._filename())
-
-        result = os.path.isfile(tgt_path)
+        result = os.path.isfile(self._filepath())
 
         if result:
             print("Cache for {} exists.".format(self._url))
@@ -341,6 +327,13 @@ class MemeSite(object):
         """ Use SHA1 hashing algorithm to calculate a unique file name
         """
         raise NotImplementedError("Implement in subclasses.")
+
+    def _filepath(self):
+        """ Generate the path to the cache file
+        """
+        cdir = os.path.dirname(os.path.realpath(__file__))
+        tgt_path = os.path.join(cdir, self._filename())
+        return tgt_path
 
     def __repr__(self):
         return "Memesite URL:{:s} Pool:{!s} Update Time:{!s}"\
