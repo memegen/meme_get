@@ -250,5 +250,17 @@ class MemeGeneratorSiteTest(unittest.TestCase):
             self.assertTrue(a[i] == str(i))
 
 
+class RedditMemeSiteTest(unittest.TestCase):
+    """ Testing the /r/meme subreddit
+    """
+
+    def test_get_memes(self):
+        """ Testing the get memes function
+        """
+        A = memesites.RedditMemes()
+        rA = A.get_memes(31)
+        self.assertTrue(len(rA) == 31)
+
+
 if __name__ == '__main__':
     unittest.main()

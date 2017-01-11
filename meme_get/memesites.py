@@ -260,7 +260,10 @@ class MemeSite(object):
         """
         # Store all the variables into a tuple
         # Save the data to a file with a unique name
-        file_obj = open(self._filename(), 'wb')
+        cdir = os.path.dirname(os.path.realpath(__file__))
+        tgt_path = os.path.join(cdir, self._filename())
+
+        file_obj = open(tgt_path, 'wb')
         pickle.dump(self._write_data_tuple(), file_obj)
         file_obj.close()
 
@@ -699,8 +702,6 @@ class MemeGenerator(MemeSite):
 
         return dtuple[4]
 
-# TO-DO: Write one for reddit meme subreddit
-
 
 class RedditMemes(MemeSite):
 
@@ -712,13 +713,16 @@ class RedditMemes(MemeSite):
             cache_size (int): Number of memes stored as cache
             maxcache_day (int): Number of days until the cache expires
         """
-        super(MemeGenerator, self).__init__(
+        super(RedditMemes, self).__init__(
             "https://www.reddit.com/r/memes/", cache_size, maxcache_day)
         self._origin = Origins.REDDITMEMES
 
         # Client ID and user agent requested by Reddit API
         config = configparser.ConfigParser()
-        config.read('config.ini')
+
+        cdir = os.path.dirname(os.path.realpath(__file__))
+        config.read(os.path.join(cdir, 'config.ini'))
+
         self._client_id = config['Reddit']['ClientID']
         self._client_secret = config['Reddit']['ClientSecret']
         if self._client_secret == '':
