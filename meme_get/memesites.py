@@ -9,6 +9,7 @@ import hashlib
 import math
 import os.path
 import praw
+import inspect
 import configparser
 from enum import Enum
 from collections import deque
@@ -232,11 +233,13 @@ class MemeSite(object):
         """ Read the saved cache file (no side effects)
         Read a tuple containing the data
         """
-        fname = self._filename()
+        #fname = self._filename()
+        cdir = os.path.dirname(os.path.realpath(__file__))
+        tgt_path = os.path.join(cdir, self._filename())
 
-        if os.path.isfile(fname):
+        if os.path.isfile(tgt_path):
             # Read the file in using Pickle
-            file_obj = open(fname, 'rb')
+            file_obj = open(tgt_path, 'rb')
             data = pickle.load(file_obj)
             # print(data)
             # self._read_data_tuple(data)
@@ -263,6 +266,11 @@ class MemeSite(object):
         cdir = os.path.dirname(os.path.realpath(__file__))
         tgt_path = os.path.join(cdir, self._filename())
 
+        cdir1 = os.path.dirname(os.path.abspath(
+            inspect.getfile(inspect.currentframe())))
+
+        print(cdir, cdir1, tgt_path)
+
         file_obj = open(tgt_path, 'wb')
         pickle.dump(self._write_data_tuple(), file_obj)
         file_obj.close()
@@ -276,32 +284,36 @@ class MemeSite(object):
             result = delta_time > datetime.timedelta(days=self._maxcache_day)
 
             if result:
-                print("Cache has expired.")
+                print("Cache for {} has expired.".format(self._url))
             else:
-                print("Cache is not expired.")
+                print("Cache for {} is not expired.".format(self._url))
 
             return result
+
         except OSError:
-            print("Cache does not exist.")
+            print("Cache for {} is not expired.".format(self._url))
             return False
 
     def _no_cache(self):
         """ Check whether cache exists
         """
-        fname = self._filename()
-        result = os.path.isfile(fname)
+        #fname = self._filename()
+        cdir = os.path.dirname(os.path.realpath(__file__))
+        tgt_path = os.path.join(cdir, self._filename())
+
+        result = os.path.isfile(tgt_path)
 
         if result:
-            print("Cache exists.")
+            print("Cache for {} exists.".format(self._url))
         else:
-            print("Cache does not exist.")
+            print("Cache for {}  does not exist.".format(self._url))
 
         return not result
 
     def _build_cache(self):
         """ Build cache
         """
-        print("Building cache.")
+        print("Building cache for {}.".format(self._url))
         self._populate(self._cache_size)
         self._save_cache()
 
@@ -519,7 +531,6 @@ class MemeGenerator(MemeSite):
                 "Wrong popular type. Supported: Daily, Weekly, Monthly")
 
         self._timeout = timeout
-        self._origin = Origins.MEMEGENERATOR
         self._posts_per_page = 15
         if self._no_cache() or self._cache_expired():
             self._build_cache()

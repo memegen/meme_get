@@ -135,17 +135,12 @@ def mock_requests_get(*args, **kwargs):
 
             return self.json_data
 
-    print(args)
     url = args[0]
     target_url = "http://version1.api.memegenerator.net/" \
                  "Instances_Select_ByPopular"
 
     with open('./test/memegenerator_sample.json') as data_file:
         mock_json_1 = json.load(data_file)
-
-    print("Using mock requests get method.")
-    print("URL: ", url)
-    print("Target URL: ", target_url)
 
     if url == target_url:
         return MockResponse(mock_json_1, 200)
@@ -211,7 +206,6 @@ class MemeGeneratorSiteTest(unittest.TestCase):
         """ Testing the _memes_on_page() function of the MemeGenerator class
         """
 
-        print("P1")
         A = memesites.MemeGenerator()
         # This the function call that will use the mock function
         A._memes_on_page(1, 10)
@@ -260,6 +254,9 @@ class RedditMemeSiteTest(unittest.TestCase):
         A = memesites.RedditMemes()
         rA = A.get_memes(31)
         self.assertTrue(len(rA) == 31)
+
+        rB = A.get_memes(601)
+        self.assertTrue(len(rB) == 601)
 
 
 if __name__ == '__main__':
