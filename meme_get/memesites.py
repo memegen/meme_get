@@ -10,6 +10,9 @@ import math
 import os.path
 import praw
 import configparser
+import ocr.ocrcomp
+import urllib.request
+from PIL import Image
 from enum import Enum
 from collections import deque
 
@@ -149,6 +152,70 @@ class Meme(object):
         """ Representing a list of tags for the meme
         """
         return self._tags
+
+    def ocr_caption(self, method="Tesseract", **kwargs):
+        """ Use ocr to update self caption
+
+        **OCR Methods Available**
+        - Tesseract: When using Tesseract, users need to provide:
+            - thres (bool): a boolean indicating whether we need to threshold
+                the image
+            - cfg (str): a string representing the configuration to use
+                for Tesseract
+        """
+
+        def checkKwargs(**kwargs):
+            if kwargs is None:
+                raise ValueError(
+                    "Please provide Tesseract method kwargs.")
+            else:
+                try:
+                    thres = kwargs["thres"]
+                    cfg = kwargs["cfg"]
+
+                    if type(thres) is not bool:
+                        raise ValueError(
+                            "Threshold value must be a boolean.")
+
+                    if type(cfg) is not str:
+                        raise ValueError(
+                            "Configuration name must be a string.")
+
+                except KeyError:
+                    raise KeyError("Legal entries: thres and cfg.")
+
+        path = Image.open(urllib.request.urlopen(self.get_pic_url()))
+
+        if self._caption is None or len(self._caption) == 0:
+            # run ocr routine
+            if method == "Tesseract":
+                checkKwargs(kwargs)
+                result = ocr.ocrcomp.ocrTesseract(
+                    path, thres=kwargs["thres"], cfg=kwargs["cfg"])
+
+                self._caption = result
+
+            if method == "FontMatching":
+                result = ocr.ocrcomp.ocr(path)
+                self._caption = result
+
+            if method == "Auto":
+                checkKwargs(kwargs)
+                A = ocr.ocrcomp.ocrcomp(path, ocr,
+                                        lambda x: ocr.ocrcomp.ocrTesseract(
+                                            x, thres=True, cfg=kwargs["cfg"]),
+                                        lambda x: ocr.ocrcomp.ocrTesseract(
+                                            x, thres=True, cfg="Default"),
+                                        lambda x: ocr.ocrcomp.ocrTesseract(
+                                            x, thres=False, cfg=kwargs["cfg"]),
+                                        lambda x: ocr.ocrcomp.ocrTesseract(
+                                            x, thres=False, cfg="Default"))
+                self._caption = A[-1][-1]
+            else:
+                raise ValueError("Not a supported mathod. Methods available: "
+                                 "Tesseract, FontMatching, Auto")
+        else:
+            print("Caption already exists.")
 
     def __hash__(self):
         """ Two memes are the same if they have the same urls and the same capture time

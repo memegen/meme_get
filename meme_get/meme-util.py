@@ -43,10 +43,3 @@ def thres(pil_Image):
                 thdr.point([x, y], fill=(255, 255, 255))
     thim.show()
     return thim
-
-
-if __name__ == "__main__":
-    path = "test3.jpg"
-    IM = Image.open(path)
-    result = thres(IM)
-    result.save("result2.jpg")
