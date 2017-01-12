@@ -258,6 +258,9 @@ class RedditMemeSiteTest(unittest.TestCase):
         rB = A.get_memes(601)
         self.assertTrue(len(rB) == 601)
 
+        for a in rA:
+            print(a.get_title())
+
 
 if __name__ == '__main__':
     unittest.main()

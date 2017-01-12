@@ -9,7 +9,6 @@ import hashlib
 import math
 import os.path
 import praw
-import inspect
 import configparser
 from enum import Enum
 from collections import deque
@@ -17,17 +16,23 @@ from collections import deque
 
 class Origins(Enum):
     """ Enum for holding the origins of memes.
-
-    Attributes:
-    NA: Not available
-    QUICKMEME: Representing quickmeme.com
-    MEMEGENERATOR: Representing memegenerator.net
-    REDDITMEMES: Representing /r/meme subreddit
     """
+
     NA = 0
+    """ Representing an unknown origin.
+    """
+
     QUICKMEME = 1
+    """ Representing quickmeme.com.
+    """
+
     MEMEGENERATOR = 2
+    """ Representing memegenerator.net.
+    """
+
     REDDITMEMES = 3
+    """ Represeting Reddit /r/meme subreddit.
+    """
 
     @classmethod
     def string_to_enum(self, s):
@@ -50,13 +55,14 @@ class Meme(object):
 
     This class provides a high-level abstraction for memes.
 
-    Attributes:
-        _pic_url (str): A string representing the url of the picture
-        _caption (str): A string representing the caption of the meme
-        _time (datetime object): The time of creation of the meme
-        _origin (Orgins Enum): The origins enum object representing the origin
-        _tags (list): A list of string representing the categories of the meme
-
+    **Attributes:**
+        * _pic_url (str): A string representing the url of the picture
+        * _caption (str): A string representing the caption of the meme
+        * _time (datetime object): The time of creation of the meme
+        * _origin (Orgins Enum): The origins enum object representing
+          the origin
+        * _tags (list): A list of string representing the categories
+           of the meme
     """
 
     def __init__(self, pic_url, time,
@@ -68,13 +74,15 @@ class Meme(object):
                  score=-1):
         """ __init__ method for Meme class
 
-        Args:
-            pic_url (str): URL of the meme picture
-            time (datetime object): Time of creation
-            caption (str): The caption of the meme
-            raw_pic_url (str): The url of the picture without caption
-            origin (Origins Enum): The origin of the meme (website)
-            tags (list): A list of strings representing tags
+
+        :param str pic_url: URL of the meme picture
+        :param datetime time: Time of creation
+        :param str caption: The caption of the meme
+        :param str raw_pic_url: The url of the picture without caption
+        :param origin: The origin of the meme (website)
+        :param list tags: A list of strings representing tags
+        :param int score: A score representing the popularity of the meme
+        :type origin: Origins (Enum Type)
         """
         self._pic_url = pic_url
         self._time = time
@@ -86,27 +94,50 @@ class Meme(object):
 
     def get_pic_url(self):
         """ Get url to the picture
+
+        :return: The url to the meme picture. Notice that this picture
+            contains the captions.
+        :rtype: str
         """
         return self._pic_url
 
     def get_caption(self):
         """ Get caption of the meme
+
+        :return: The captions of the meme.
+        :rtype: str
         """
         return self._caption
 
     def get_title(self):
         """ Get the title of the meme
+
+        :return: The title of the meme
+        :rtype: str
+        :raises ValueError: if the meme does not have a title
         """
+        if self._title is None or len(self._title) == 0:
+            raise ValueError("Meme does not have a title.")
         return self._title
 
     def get_time(self):
         """ Return the meme's creation time
+
+        :return: The creation time of the meme
+        :rtype: datetime object
         """
         return self._time
 
     def get_raw_pic_url(self):
         """ Return the url of the meme's picture without caption
+
+        :return: The url pointing to the meme's background picture
+        :rtype: str
+        :raises ValueError: if the meme does not have a empty
+            background picture
         """
+        if self._raw_pic_url is None or len(self._raw_pic_url) == 0:
+            raise ValueError("Meme does not have a background picture url.")
         return self._raw_pic_url
 
     def get_origin(self):
@@ -234,9 +265,9 @@ class MemeSite(object):
         Read a tuple containing the data
         """
 
-        if os.path.isfile(self._filepath):
+        if os.path.isfile(self._filepath()):
             # Read the file in using Pickle
-            file_obj = open(self._filepath, 'rb')
+            file_obj = open(self._filepath(), 'rb')
             data = pickle.load(file_obj)
             # print(data)
             # self._read_data_tuple(data)
