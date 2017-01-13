@@ -1,0 +1,4 @@
+About
+====================================
+
+This library is one part of the on-going Physical Generative Arts using Trending Internet Memes Project at Harvey Mudd College.

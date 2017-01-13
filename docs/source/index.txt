@@ -8,8 +8,10 @@ meme_get
 ====================================
 
 
+This is a library that provides a high-level abstraction for extracting memes from popular online websites. Currently, we support extracting memes from quickmeme.com, memegenerator.net and the Meme subreddit from Reddit.
 
-This is a library that provides a high-level abstraction for extracting memes from popular online websites.
+
+Authors: Jingnan Shi, Lingdong Huang, Jason Ma
 
 .. toctree::
    :maxdepth: 2
@@ -18,7 +20,6 @@ This is a library that provides a high-level abstraction for extracting memes fr
    about
    documentation
    
-
 
 
 Indices and tables

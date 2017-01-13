@@ -1,5 +1,14 @@
-# Classes related to getting memes from sites
-# Currently support: quickmeme.com
+from __future__ import print_function
+from __future__ import division
+from __future__ import unicode_literals
+from __future__ import absolute_import
+from builtins import super
+from builtins import range
+from builtins import open
+from builtins import str
+from future import standard_library
+standard_library.install_aliases()
+
 import requests
 import sys
 import bs4
@@ -12,7 +21,6 @@ import io
 import praw
 import configparser
 from .ocr import ocrcomp
-from PIL import Image
 from enum import Enum
 from collections import deque
 
@@ -158,10 +166,10 @@ class Meme(object):
 
         **OCR Methods Available**
 
-        * `Tesseract <https://github.com/tesseract-ocr/tesseract>`: 
+        * `Tesseract <https://github.com/tesseract-ocr/tesseract>`:
           Open-source OCR Engine
         * FontMatching: Using Impact Font and template matching to conduct OCR
-        
+
         When using Tesseract, users need to provide two keyword arguments:
 
             * thres (bool): a boolean indicating whether we need to threshold
@@ -190,16 +198,17 @@ class Meme(object):
 
                 except KeyError:
                     raise KeyError("Legal entries: thres and cfg.")
-        
+
         # Create a file-like object using Requests and BytesIO
         r = requests.get(self._pic_url, stream=True)
         path = io.BytesIO(r.content)
-        
+
         if self._caption is None or len(self._caption) == 0:
             # run ocr routine
             if method == "Tesseract":
                 checkKwargs()
-                print("Now performing OCR with Tesseract and {}".format(str(kwargs)))
+                print("Now performing OCR with"
+                      " Tesseract and {}".format(str(kwargs)))
                 result = ocrcomp.ocrTesseract(
                     path, thres=kwargs["thres"], cfg=kwargs["cfg"])
 
@@ -233,8 +242,8 @@ class Meme(object):
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
-            return (self._pic_url == other._pic_url
-                    and self._time == other._time)
+            return (self._pic_url == other._pic_url and
+                    self._time == other._time)
         return NotImplemented
 
     def __ne__(self, other):
