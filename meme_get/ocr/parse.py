@@ -4,19 +4,25 @@ from builtins import range
 from past.utils import old_div
 import json
 import itertools
-import util
+import meme_get.ocr.util as util
 import warnings
+import os
 
 
 # loads raw ocr data
-path = "images/img5.jpg"
-fi = open("data/" + path.split("/")[-1].split(".")[0] + ".json", "r")
-js = json.loads(fi.read())
-bds = js[0]
-ccr = js[1]
+#path = "images/img5.jpg"
+# fi = open("data/" + path.split("/")[-1].split(".")[0] + ".json", "r")
+#js = json.loads(fi.read())
+bds = None
+ccr = None
+#bds = js[0]
+#ccr = js[1]
 
 # dictionary
-wl = open("dict/linuxwords.txt", "r").read().upper().split("\n")
+#wl = open("dict/linuxwords.txt", "r").read().upper().split("\n")
+
+wl_path = os.path.join(os.path.dirname(__file__),"dict/linuxwords.txt")
+wl = open(wl_path, "r").read().upper().split("\n")
 
 
 # format raw ocr data

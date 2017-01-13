@@ -192,6 +192,9 @@ def checkchars():
         print(i, "/", len(areas))
         bd = getbounds(areas[i])
         scores = []
+        
+        print(len(cimgs))
+
         for j in range(0, len(cimgs)):
             score = 0
             px = cimgs[j].load()
@@ -252,14 +255,14 @@ def makeglyphs():
     for i in range(0, len(C)):
         im = Image.new("RGB", (100, 110))
         dr = ImageDraw.Draw(im)
-        font = ImageFont.truetype("./fonts/Impact.ttf", 124)
+        font = ImageFont.truetype(os.path.join(os.path.dirname(__file__),"fonts/Impact.ttf"), 124)
         dr.text((0, -25), C[i], (255, 255, 255), font=font)
 
         fwx = firstwhitex(im)
 
         im = Image.new("RGB", (100, 110))
         dr = ImageDraw.Draw(im)
-        font = ImageFont.truetype("./fonts/Impact.ttf", 124)
+        font = ImageFont.truetype(os.path.join(os.path.dirname(__file__),"fonts/Impact.ttf"), 124)
         dr.text((-fwx, -26), C[i], (255, 255, 255), font=font)
 
         cimgs.append(im)
@@ -281,17 +284,29 @@ def thresh():
 
 
 def rawocr(path):
+    global cimgs
+    print("Starting ocr for {}".format(str(path)))
+    # Clear glyphs
+    cimgs = []
+
     loadimg(path)
+    print("p0: ", len(cimgs))
     makeglyphs()
+
+    print("p1: ", len(cimgs))
     thresh()
-    thim.show()
+    # thim.show()
     getareas()
     bds = drawbounds()
-    disp.show()
+
+    # disp.show()
+    print("p2: ", len(cimgs))
+
     ccr = checkchars()
     showresult(ccr)
-    disp.show()
+    # disp.show()
     closeimg()
+    print("Finish OCR.")
     return bds, ccr
 
 
