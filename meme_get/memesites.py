@@ -157,11 +157,18 @@ class Meme(object):
         """ Use ocr to update self caption
 
         **OCR Methods Available**
-        * Tesseract: When using Tesseract, users need to provide:
+
+        * `Tesseract <https://github.com/tesseract-ocr/tesseract>`: 
+          Open-source OCR Engine
+        * FontMatching: Using Impact Font and template matching to conduct OCR
+        
+        When using Tesseract, users need to provide two keyword arguments:
+
             * thres (bool): a boolean indicating whether we need to threshold
               the image
             * cfg (str): a string representing the configuration to use
               for Tesseract
+
         """
 
         def checkKwargs():
@@ -184,9 +191,7 @@ class Meme(object):
                 except KeyError:
                     raise KeyError("Legal entries: thres and cfg.")
         
-        #fd = urllib.urlopen(self._pic_url)
-        #path = io.BytesIO(fd.read())
-        # path = Image.open(urllib.request.urlopen(self.get_pic_url()))
+        # Create a file-like object using Requests and BytesIO
         r = requests.get(self._pic_url, stream=True)
         path = io.BytesIO(r.content)
         
