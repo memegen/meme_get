@@ -6,6 +6,7 @@ from past.utils import old_div
 import random
 import json
 import sys
+import os
 import enchant
 import pyocr
 import pyocr.builders
@@ -54,6 +55,12 @@ def loadimg(path):
     thpx = thim.load()
     thdr = ImageDraw.Draw(thim)
 
+def closeimg():
+    """ Close all the image
+    """
+    IM.close()
+    disp.close()
+    thim.close()
 
 # rgb(255,255,255) to hsv(360,1.0,1.0) conversion
 def rgb2hsv(r, g, b):
@@ -284,6 +291,7 @@ def rawocr(path):
     ccr = checkchars()
     showresult(ccr)
     disp.show()
+    closeimg()
     return bds, ccr
 
 
@@ -315,7 +323,8 @@ def tesseract_ocr_helper(base_image, config="Default"):
     )
 
     # Spell correct
-    d = enchant.DictWithPWL("en_US", "./dict/urban_dict.txt")
+    dict_path = os.path.join(os.path.dirname(__file__),"dict/urban_dict.txt")
+    d = enchant.DictWithPWL("en_US", dict_path)
     txtA = txt.replace('\n', ' \n ')
     A = txtA.split(" ")
     B = []

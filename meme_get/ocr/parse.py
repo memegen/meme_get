@@ -1,7 +1,5 @@
 from __future__ import print_function
 from __future__ import division
-#pylint: disable=C0103
-
 from builtins import range
 from past.utils import old_div
 import json

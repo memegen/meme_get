@@ -8,10 +8,10 @@ import pickle
 import hashlib
 import math
 import os.path
+import io
 import praw
 import configparser
-import ocr.ocrcomp
-import urllib.request
+from .ocr import ocrcomp
 from PIL import Image
 from enum import Enum
 from collections import deque
@@ -164,7 +164,7 @@ class Meme(object):
                 for Tesseract
         """
 
-        def checkKwargs(**kwargs):
+        def checkKwargs():
             if kwargs is None:
                 raise ValueError(
                     "Please provide Tesseract method kwargs.")
@@ -183,35 +183,39 @@ class Meme(object):
 
                 except KeyError:
                     raise KeyError("Legal entries: thres and cfg.")
-
-        path = Image.open(urllib.request.urlopen(self.get_pic_url()))
-
+        
+        #fd = urllib.urlopen(self._pic_url)
+        #path = io.BytesIO(fd.read())
+        # path = Image.open(urllib.request.urlopen(self.get_pic_url()))
+        r = requests.get(self._pic_url, stream=True)
+        path = io.BytesIO(r.content)
+        
         if self._caption is None or len(self._caption) == 0:
             # run ocr routine
             if method == "Tesseract":
-                checkKwargs(kwargs)
-                result = ocr.ocrcomp.ocrTesseract(
+                checkKwargs()
+                print("Now performing OCR with Tesseract and {}".format(str(kwargs)))
+                result = ocrcomp.ocrTesseract(
                     path, thres=kwargs["thres"], cfg=kwargs["cfg"])
 
                 self._caption = result
-
-            if method == "FontMatching":
-                result = ocr.ocrcomp.ocr(path)
+            elif method == "FontMatching":
+                result = ocrcomp.ocr(path)
                 self._caption = result
-
-            if method == "Auto":
-                checkKwargs(kwargs)
-                A = ocr.ocrcomp.ocrcomp(path, ocr,
-                                        lambda x: ocr.ocrcomp.ocrTesseract(
-                                            x, thres=True, cfg=kwargs["cfg"]),
-                                        lambda x: ocr.ocrcomp.ocrTesseract(
-                                            x, thres=True, cfg="Default"),
-                                        lambda x: ocr.ocrcomp.ocrTesseract(
-                                            x, thres=False, cfg=kwargs["cfg"]),
-                                        lambda x: ocr.ocrcomp.ocrTesseract(
-                                            x, thres=False, cfg="Default"))
+            elif method == "Auto":
+                checkKwargs()
+                A = ocrcomp.ocrcomp(path, ocrcomp.ocr,
+                                    lambda x: ocrcomp.ocrTesseract(
+                                        x, thres=True, cfg=kwargs["cfg"]),
+                                    lambda x: ocrcomp.ocrTesseract(
+                                        x, thres=True, cfg="Default"),
+                                    lambda x: ocrcomp.ocrTesseract(
+                                        x, thres=False, cfg=kwargs["cfg"]),
+                                    lambda x: ocrcomp.ocrTesseract(
+                                        x, thres=False, cfg="Default"))
                 self._caption = A[-1][-1]
             else:
+                print(method)
                 raise ValueError("Not a supported mathod. Methods available: "
                                  "Tesseract, FontMatching, Auto")
         else:
