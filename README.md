@@ -1,2 +1,0 @@
-# meme-get
-Get memes
