@@ -65,7 +65,7 @@ class Meme(object):
         * _origin (Orgins Enum): The origins enum object representing
           the origin
         * _tags (list): A list of string representing the categories
-           of the meme
+          of the meme
     """
 
     def __init__(self, pic_url, time,
@@ -157,11 +157,11 @@ class Meme(object):
         """ Use ocr to update self caption
 
         **OCR Methods Available**
-        - Tesseract: When using Tesseract, users need to provide:
-            - thres (bool): a boolean indicating whether we need to threshold
-                the image
-            - cfg (str): a string representing the configuration to use
-                for Tesseract
+        * Tesseract: When using Tesseract, users need to provide:
+            * thres (bool): a boolean indicating whether we need to threshold
+              the image
+            * cfg (str): a string representing the configuration to use
+              for Tesseract
         """
 
         def checkKwargs():
