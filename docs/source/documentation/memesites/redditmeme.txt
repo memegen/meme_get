@@ -1,5 +1,7 @@
 RedditMemes
 ============
 
+This is a subclass derived from ``MemeSite`` to provide meme extraction from `/r/memes <https://www.reddit.com/r/memes/>`_.
+
 .. autoclass:: meme_get.memesites.RedditMemes
    :members:

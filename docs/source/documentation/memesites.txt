@@ -7,6 +7,14 @@ The subclasses should implement caching to improve reading performance.
 .. autoclass:: meme_get.memesites.MemeSite
    :members:
 
+Origins Enum
+=============
+
+This is an enum-type designed to provide abstraction for the origins of the memes we extract from the Internet.
+
+.. autoclass:: meme_get.memesites.Origins
+   :members:
+
 Sub-classes
 ------------
 .. toctree::

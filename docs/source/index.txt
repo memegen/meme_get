@@ -19,7 +19,7 @@ Here is a short example::
     >>> a = RedditMemes()
     >>> meme_list = a.get_memes(100)
     >>> for meme in meme_list:
-            print(meme.get_title())
+    >>>     print(meme.get_title())
 
 .. figure:: images/meme1.jpg
    :align:  center

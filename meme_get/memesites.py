@@ -48,8 +48,8 @@ class Origins(Enum):
     @classmethod
     def string_to_enum(self, s):
         """ Conver string to a Origins Enum object
-        Args:
-            s (str): The string representing the name of the origin
+        
+        :param str s: The string representing the name of the origin
         """
         if s.lower() == "quickmeme":
             return self.QUICKMEME

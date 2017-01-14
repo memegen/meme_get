@@ -1,5 +1,7 @@
 MemeGenerator
 ==============
 
+This is a subclass derived from ``MemeSite`` to provide meme extraction from `memegenerator.net <https://memegenerator.net/>`_.
+
 .. autoclass:: meme_get.memesites.MemeGenerator
    :members:

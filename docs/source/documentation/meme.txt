@@ -1,5 +1,7 @@
 Meme
 ==============
 
+Meme objects contain the information you need to analyze a meme.
+
 .. autoclass:: meme_get.memesites.Meme
    :members:

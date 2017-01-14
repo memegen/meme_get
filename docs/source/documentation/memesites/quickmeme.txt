@@ -1,5 +1,7 @@
 QuickMeme
 ===========
 
+This is a subclass derived from ``MemeSite`` to provide meme extraction from `www.quickmeme.com <http://www.quickmeme.com/>`_.
+
 .. autoclass:: meme_get.memesites.QuickMeme
    :members:
