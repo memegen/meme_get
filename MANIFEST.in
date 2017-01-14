@@ -1,0 +1,6 @@
+include README.rst
+include docs/*.txt
+include meme_get/ocr/dict/*.txt
+include meme_get/ocr/urban/*.data
+include meme_get/ocr/fonts/*
+include meme_get/ocr/*.json

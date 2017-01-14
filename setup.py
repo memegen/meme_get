@@ -10,7 +10,7 @@ with open(path.join(HERE, 'README.rst'), encoding='utf-8') as f:
 
 
 setup(name=PACKAGE_NAME,
-      version='1.0.0b1',
+      version='1.0.2b1',
       description='Get memes',
       long_description=README,
       license='MIT',
@@ -38,6 +38,4 @@ setup(name=PACKAGE_NAME,
           'lxml',
           'Pillow'],
       packages=find_packages(exclude=['tests', 'tests.*']),
-      package_data={
-          '':['LICENSE', '*.rst', '*.txt', '*.ini', '*.data', '*.ttf', '*.cfg']
-      })
+      include_package_data=True)
