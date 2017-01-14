@@ -8,22 +8,52 @@ meme_get
 ====================================
 
 
-This is a library that provides a high-level abstraction for extracting memes from popular online websites. Currently, we support extracting memes from quickmeme.com, memegenerator.net and the Meme subreddit from Reddit.
+This is a library that provides a high-level abstraction for extracting memes from popular online websites. Currently, we support extracting memes from:
+
+* `quickmeme.com <http://www.quickmeme.com/>`_
+* `memegenerator.net <https://memegenerator.net/>`_
+* `Memes subreddit <https://www.reddit.com/r/memes/>`_ from Reddit.
+
+Here is a short example::
+
+    >>> a = RedditMemes()
+    >>> meme_list = a.get_memes(100)
+    >>> for meme in meme_list:
+            print(meme.get_title())
+
+.. figure:: images/meme1.jpg
+   :align:  center
+
+Why do we care about memes?
+----------------------------
+
+According to `Wikipedia <https://en.wikipedia.org/wiki/Internet_meme>`_, an Internet meme is "an activity, concept, catchphrase or piece of media which spreads, often as mimicry, from person to person via the Internet." In our case, we care about a specific format of meme: one that takes the form of an image macro and captions.
+
+.. figure:: images/meme0.jpg
+   :align:  center
+
+We find these memes interesting because they are inherently simple. Yet with the right captions and image combinations, memes can become viral in a few hours. (See `Bad Luck Brian <http://knowyourmeme.com/memes/bad-luck-brian>`_) We think it might be interesting to investigate into these phenomenons.
 
 
 Authors: Jingnan Shi, Lingdong Huang, Jason Ma
 
+Guides
+-----------
+
+If you are looking for information on installation and/or how to use a specific method or class, then you can refer to the following:
+
+
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 3
 
    about
+   installation
    documentation
    
 
 
 Indices and tables
-==================
+-------------------
 
 * :ref:`genindex`
 * :ref:`modindex`

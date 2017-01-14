@@ -1,0 +1,17 @@
+MemeSite
+==============
+
+MemeSite is the superclass that defines the interface for all the meme-extraction subclasses.
+The subclasses should implement caching to improve reading performance.
+
+.. autoclass:: meme_get.memesites.MemeSite
+   :members:
+
+Sub-classes
+------------
+.. toctree::
+   :maxdepth: 2
+
+   memesites/quickmeme
+   memesites/memegenerator
+   memesites/redditmeme

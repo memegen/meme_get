@@ -1,0 +1,5 @@
+QuickMeme
+===========
+
+.. autoclass:: meme_get.memesites.QuickMeme
+   :members:

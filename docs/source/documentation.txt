@@ -1,7 +1,11 @@
 Documentation
 ========================================
 
-This is a automatically generated documentation page for meme_get package.
+This is the documentation page for meme_get package.
 
-.. autoclass:: meme_get.memesites.Meme
-   :members:
+.. toctree::
+   :maxdepth: 2
+   :caption: Documentation List
+
+   documentation/meme
+   documentation/memesites

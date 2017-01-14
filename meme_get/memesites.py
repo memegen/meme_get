@@ -166,7 +166,7 @@ class Meme(object):
 
         **OCR Methods Available**
 
-        * `Tesseract <https://github.com/tesseract-ocr/tesseract>`:
+        * `Tesseract <https://github.com/tesseract-ocr/tesseract>`_:
           Open-source OCR Engine
         * FontMatching: Using Impact Font and template matching to conduct OCR
 
@@ -200,7 +200,14 @@ class Meme(object):
                     raise KeyError("Legal entries: thres and cfg.")
 
         # Create a file-like object using Requests and BytesIO
-        r = requests.get(self._pic_url, stream=True)
+        extensions = ['.jpg', '.png']
+        eurl = self._pic_url[-4:]
+        turl = self._pic_url
+
+        if eurl not in extensions:
+            turl += '.jpg'
+
+        r = requests.get(turl, stream=True)
         path = io.BytesIO(r.content)
 
         if self._caption is None or len(self._caption) == 0:
@@ -261,7 +268,7 @@ class Meme(object):
 
 
 class MemeSite(object):
-    """ A base class for any sites with respect to memes
+    """ A super class for any sites with respect to memes.
 
     This class should be subclassed. The MemeSite is designed to keep
     all Memes in a cache file, so that even if the Python process is
@@ -271,14 +278,14 @@ class MemeSite(object):
     in them as constant, as operations on the object will change the memes
     inside the pool and deque.
 
-    Attributes:
-        _url (str): URL for the website hosting memes
-        _max_tries (int): Max tries for http requests
-        _meme_pool (set): A set containing stored memes
-        _meme_deque (deque): A deque containing stored memes
-        _last_update (datetime object): The time of last download of memes
-        _cache_size (int): Number of memes stored on disk
-        _maxcache_day (int): Max day of keeping the cache on disk
+    **Attributes:**
+        * _url (str): URL for the website hosting memes
+        * _max_tries (int): Max tries for http requests
+        * _meme_pool (set): A set containing stored memes
+        * _meme_deque (deque): A deque containing stored memes
+        * _last_update (datetime object): The time of last download of memes
+        * _cache_size (int): Number of memes stored on disk
+        * _maxcache_day (int): Max day of keeping the cache on disk
     """
 
     def __init__(self, url, cache_size=500, maxcache_day=1):
@@ -296,43 +303,68 @@ class MemeSite(object):
             sys.stderr.write("ERROR: {} \n".format(str(err)))
 
     def get_captions(self, num_memes):
-        """ Return a list of captions
+        """ Return a list of captions.
+
+        :return: A list of strings representing the captions.
+            If captions do not exist, the string will be of None type.
+        :rtype: list
         """
         a = self.get_memes(num_memes)
         return [x.get_caption() for x in a]
 
     def get_memes(self, num_memes):
-        """ Return a list of memes
+        """ Return a list of Memes.
+
+        :return: A list of Meme objects.
+        :rtype: list
         """
         raise NotImplementedError("Implement in subclasses.")
 
     def clean_meme_pool(self):
         """ Empty the meme pool
+
+        :return: None
+        :rtype: NoneType
         """
         self._meme_pool = set()
 
     def clean_meme_deque(self):
         """ Empty the meme deque
+
+        :return: None
+        :rtype: NoneType
         """
         self._meme_deque.clear()
 
     def get_url(self):
         """ Return the base url
+
+        :return: A string representing the url to the origin site.abs
+        :rtype: str
         """
         return self._url
 
     def get_meme_pool(self):
         """ Return a set of memes
+
+        :return: A set of Memes
+        :rtype: set
         """
         return self._meme_pool
 
     def get_meme_num(self):
-        """ Return the number of memes we have
+        """ Return the number of memes we have.
+
+        :return: An int
+        :rtype: int
         """
         return len(self._meme_deque)
 
     def get_unique_meme_num(self):
         """ Return the number of unique memes we have
+
+        :return: An int
+        :rtype: int
         """
         return len(self._meme_pool)
 
