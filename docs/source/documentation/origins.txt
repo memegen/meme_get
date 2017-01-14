@@ -1,0 +1,7 @@
+Origins Enum
+=============
+
+This is an enum-type designed to provide abstraction for the origins of the memes we extract from the Internet.
+
+.. autoclass:: meme_get.memesites.Origins
+   :members:
