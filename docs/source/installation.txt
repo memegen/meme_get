@@ -1,2 +1,13 @@
 Installation
 ==============
+
+Users can choose to install the package using ``pip``.
+
+Use Pip
+--------
+
+It's simple::
+
+	pip install meme_get
+
+
