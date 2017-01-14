@@ -90,5 +90,5 @@ ENV/
 
 # Custom
 *.memecache
-*.jpg
+meme_get/ocr/images/*.jpg
 *.json
