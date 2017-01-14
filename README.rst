@@ -28,3 +28,8 @@ Documentation
 --------------
 
 The API and documentation are hosted on `http://meme-get.readthedocs.io/en/latest/ <http://meme-get.readthedocs.io/en/latest/>`_
+
+
+Credits
+--------
+The library uses the `urban dictionary word list <https://github.com/mattbierner/urban-dictionary-word-list>`_ gathered by `Matt Bierner <https://github.com/mattbierner>`_.
